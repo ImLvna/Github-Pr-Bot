@@ -82,7 +82,7 @@ client.on('messageCreate', async (message) => {
           .setDescription(pr.data.body)
           .setURL(pr.data.html_url)
           .setColor(color)
-          .setFooter({ text: `#${pr.data.number} - ${prtype} - ${pr.data.user.login}` })
+          .setFooter({ text: `#${pr.data.number} - ${prtype} - ${pr.data.user.login}` });
 
         message.channel.send({ embeds: [embed] });
       }
@@ -94,10 +94,15 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
 
   let msg = !messageReaction.message.author ? await messageReaction.message.fetch() : messageReaction.message;
   if(msg.author.id !== client.user.id) return;
-  if (messageReaction.emoji.name !== '❌') return;
   let member = await msg.guild.members.fetch(user.id);
   if (!member.roles.cache.some(r => r.name === 'Contributor (Code)')) return messageReaction.remove();
-  messageReaction.message.delete();
+  if (messageReaction.emoji.name === '❌') return msg.delete();
+  else if (messageReaction.emoji.name === '❓' || messageReaction.emoji.name === '❔' || messageReaction.emoji.name === '⁉️') {
+    messageReaction.remove();
+    msg.channel.send(`<@${user.id}>, This is a PR message! Its triggered by saying the number of a pull request, ie: \`#123\`. You can react with ❌ to delete it or ❓ to get this message.`);
+  }
+
+  
 
 });
 
