@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Octokit } = require("@octokit/rest");
 const { Client, EmbedBuilder, Partials } = require('discord.js');
 const express = require('express');
+const Crypto = require('crypto');
 
 
 const app = express();
@@ -28,14 +29,40 @@ octokit.hook.error("request", async (error, options) => {
   throw error;
 });
 
+let logTokens = {};
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
-  if (!message.member.roles.cache.some(r => r.name === 'Contributor (Code)')) return;
-  if (/#(\d{1,4})/g.test(message.content)) {
+  // Only allow contribs and techhelp
+  if (!message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) return;
+
+  if (message.content.startsWith(process.env.PREFIX)) {
+    // handle command
+
+    let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
+
+    if (command === 'logs') {
+      uuid = Crypto.randomUUID();
+      logTokens[uuid] = {
+        id: message.channel.id,
+        requester: message.author.id,
+        requestee: message.mentions.users.first().id,
+      };
+      message.channel.send(`<@${message.mentions.users.first()}>, <@${message.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
+      message.channel.send(`\`${uuid}\``);
+      message.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString / 1000}:t>`);
+      setTimeout(() => {
+        if (logTokens[uuid]) {
+          delete logTokens[uuid];
+        }
+      })
+    }
+  }
+
+  else if (/#(\d{1,4})/g.test(message.content)) { // if pr
     let numbers = message.content.match(/#(\d{1,4})/g).map(n => n.replace('#', ''));
     numbers.forEach(async num => {
       let pr = await octokit.rest.pulls.get({
