@@ -51,9 +51,9 @@ client.on('messageCreate', async (message) => {
         requester: message.author.id,
         requestee: message.mentions.users.first().id,
       };
-      message.channel.send(`<@${message.mentions.users.first()}>, <@${message.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
+      message.channel.send(`${message.mentions.users.first()}, <@${message.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
       message.channel.send(`\`${uuid}\``);
-      message.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString / 1000}:t>`);
+      message.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
       setTimeout(() => {
         if (logTokens[uuid]) {
           delete logTokens[uuid];
