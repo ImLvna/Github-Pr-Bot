@@ -1,10 +1,20 @@
 require('dotenv').config();
 const { Octokit } = require("@octokit/rest");
 const { Client, EmbedBuilder, Partials } = require('discord.js');
-const client = new Client({ 
-  intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
-  partials: [Partials.Message, Partials.Channel, Partials.Reaction, ],
-});
+const express = require('express');
+
+
+const app = express();
+app.use(express.json());
+// const client = new Client({ 
+//   intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
+//   partials: [Partials.Message, Partials.Channel, Partials.Reaction, ],
+// });
+
+const client = { // dummy client for testing
+  on: (event, callback) => {},
+  login: (token) => {}
+}
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -106,4 +116,36 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
 
 });
 
+app.post('/release', (req, res) => {
+  body = req.body;
+  vernum = body.version;
+  upstream = body.upstream;
+  releaselinks = body.artifacts;
+  changelog = body.changelog;
+  channel = body.channel;
+
+  console.log(`New release: ${vernum} - ${upstream} - ${releaselinks.length} artifacts - ${changelog}`);
+
+  res.sendStatus(200);
+});
+
+app.listen(process.env.PORT.toString(), () => {
+  console.log(`Listening on port ${process.env.PORT}`);
+});
+
 client.login(process.env.DISCORD_TOKEN);
+
+
+
+
+
+`{
+  "version": "v0.8",
+  "upstream": "clangenrepo",
+  "artifacts": [
+    "http://1.com",
+    "another artifact"
+  ],
+  "changelog": "biiig changelog",
+  "channel": "release"
+}`
