@@ -30,7 +30,7 @@ octokit.hook.error("request", async (error, options) => {
 
 
 client.on('ready', async () => {
-  console.log(`Logged ina as ${client.user.tag}!`);
+  console.log(`Logged in as ${client.user.tag}!`);
 });
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
