@@ -3,10 +3,14 @@ const { Octokit } = require("@octokit/rest");
 const { Client, EmbedBuilder, Partials } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
+const multer = require("multer");
 
 
+
+const upload = multer({ dest: "uploads/" });
 const app = express();
 app.use(express.json());
+
 const client = new Client({ 
   intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction, ],
@@ -45,9 +49,11 @@ client.on('messageCreate', async (message) => {
     let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
 
     if (command === 'logs') {
+      if ( message.mentions.users.size === 0 ) return message.channel.send('You need to mention a user to get their logs!');
       uuid = Crypto.randomUUID();
+      uuid = "1"
       logTokens[uuid] = {
-        id: message.channel.id,
+        channelid: message.channel.id,
         requester: message.author.id,
         requestee: message.mentions.users.first().id,
       };
@@ -204,6 +210,24 @@ app.post('/release', (req, res) => {
 
   res.sendStatus(200);
 });
+
+
+app.post('/logs', upload.array('logs', 2) , (req, res) => {
+  body = req.body;
+  if (logTokens[body.token] === undefined) return res.sendStatus(401);
+
+  if (req.files.length === 0) return res.sendStatus(400);
+
+  tokenInfo = logTokens[body.token];
+
+  client.channels.fetch(tokenInfo.channel).then(channel => {
+    channel.send({ content: `<@${tokenInfo.requester}>, @<${tokenInfo.requestee}'s logs are ready!`, files: req.files});
+  })
+
+
+  
+
+})
 
 app.listen(process.env.PORT.toString(), () => {
   console.log(`Listening on port ${process.env.PORT}`);
