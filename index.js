@@ -6,15 +6,15 @@ const express = require('express');
 
 const app = express();
 app.use(express.json());
-// const client = new Client({ 
-//   intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
-//   partials: [Partials.Message, Partials.Channel, Partials.Reaction, ],
-// });
+const client = new Client({ 
+  intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction, ],
+});
 
-const client = { // dummy client for testing
-  on: (event, callback) => {},
-  login: (token) => {}
-}
+// const client = { // dummy client for testing
+//   on: (event, callback) => {},
+//   login: (token) => {}
+// }
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
