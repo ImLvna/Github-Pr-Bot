@@ -116,6 +116,35 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
 
 });
 
+
+channeldict = {};
+
+Object.keys(process.env).forEach((key) => {
+  value = process.env[key];
+  if (!key.startsWith('CHANNEL_')) return;
+  key = key.replace('CHANNEL_', '');
+  
+  arr = key.split('_')
+
+  upstream = arr[0] + '/' + arr[1];
+  if (arr[3] !== undefined) {
+    upstream += '_' + arr[2];
+  }
+
+  _upstream = upstream.toLowerCase();
+
+  releasechannel = arr[arr.length - 1];
+
+  if (channeldict[_upstream] === undefined) {
+    channeldict[_upstream] = {};
+  }
+
+  channeldict[_upstream][releasechannel.toLowerCase()] = value;
+});
+
+console.log("Upstream/Channel => Discord Channel mapping: ", channeldict)
+
+
 app.post('/release', (req, res) => {
   body = req.body;
   vernum = body.version;
@@ -125,6 +154,8 @@ app.post('/release', (req, res) => {
   channel = body.channel;
 
   console.log(`New release: ${vernum} - ${upstream} - ${releaselinks.length} artifacts - ${changelog}`);
+
+  
 
   res.sendStatus(200);
 });
