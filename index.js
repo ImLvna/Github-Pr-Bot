@@ -153,9 +153,27 @@ app.post('/release', (req, res) => {
   changelog = body.changelog;
   channel = body.channel;
 
-  console.log(`New release: ${vernum} - ${upstream} - ${releaselinks.length} artifacts - ${changelog}`);
+  
+  if (channeldict[upstream.toLowerCase()] === undefined) return console.log("Ignoring release for unknown upstream: ", upstream);
+  if (channeldict[upstream.toLowerCase()][channel.toLowerCase()] === undefined) return console.log("Ignoring release for unknown channel: ", channel);
+
+  let channelid = channeldict[upstream.toLowerCase()][channel.toLowerCase()];
 
   
+  date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+  
+  let embed = new EmbedBuilder()
+    .setTitle(`Update ${vernum} is now available!`)
+    .setURL(releaselinks[0])
+    .setDescription(changelog)
+    .setColor('#3381ff')
+    .setFooter({ text: date });
+  
+  client.channels.fetch(channelid).then(channel => {
+    channel.send({ embeds: [embed] });
+    console.log("Sent release message to channel: ", channel.name, " for upstream: ", upstream)
+  });
+
 
   res.sendStatus(200);
 });
