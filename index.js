@@ -90,8 +90,8 @@ module.exports.deleteLogToken = (uuid) => {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
-  // Only allow contribs and techhelp
-  if (!message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) return;
+
+  let isContributor = message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) )
 
   if (message.content.startsWith(process.env.PREFIX)) {
     // handle command
@@ -106,7 +106,7 @@ client.on('messageCreate', async (message) => {
     }
   }
 
-  else if (/#(\d{1,4})/g.test(message.content)) { // if pr
+  else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) { // if pr
     let numbers = message.content.match(/#(\d{1,4})/g).map(n => n.replace('#', ''));
     numbers.forEach(async num => {
       let pr = await octokit.rest.pulls.get({

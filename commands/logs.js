@@ -7,6 +7,11 @@ module.exports = {
   usage: '<user>',
   aliases: ['log', 'token'],
   execute(message, args) {
+
+    if (!message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) {
+        return message.channel.send('You do not have permission to use this command!');
+    };
+
     if ( message.mentions.users.size === 0 ) return message.channel.send('You need to mention a user to get their logs!');
     uuid = Crypto.randomUUID();
 
