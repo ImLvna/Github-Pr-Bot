@@ -1,4 +1,5 @@
 const { Octokit } = require("@octokit/rest");
+const { EmbedBuilder } = require('discord.js');
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
