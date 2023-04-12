@@ -69,6 +69,8 @@ for (const file of cmdfiles ) {
   _aliases = command.aliases;
   _aliases.push(command.name)
 
+  console.log('Adding command: ' + command.name + ' with aliases: ' + _aliases)
+
   commands[command.name] = {
     name: command.name,
     description: command.description,
