@@ -103,7 +103,7 @@ client.on('messageCreate', async (message) => {
       if (!isContributor) return;
       try {
         _ =  eval(args.join(' '));
-        message.channel.send(_ || 'undefined');
+        message.channel.send(_ || 'Empty response');
       } catch (e) {
         message.channel.send(e || 'Unexpected error with no message');
         return;
@@ -112,7 +112,7 @@ client.on('messageCreate', async (message) => {
       if (!isContributor) return;
       try {
         _ =  eval(args.join(' '));
-        message.channel.send(_ || 'undefined');
+        message.channel.send(_ || 'Empty response');
       } catch (e) {
         message.channel.send(e || 'Unexpected error with no message');
         return;
