@@ -6,6 +6,7 @@ const Crypto = require('crypto');
 const multer = require("multer");
 const cors = require('cors')
 const fs = require('fs');
+const path = require('path');
 
 
 
@@ -47,6 +48,34 @@ logTokens['test'] = {
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
+
+
+var commands = {}
+
+let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
+
+for (const file of cmdfiles ) {
+  commands = []
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  if (!command.name) return console.log(`Command ${file} is missing a name!`);
+  if (!command.description) return console.log(`Command ${file} is missing a description!`);
+  if (!command.usage) return console.log(`Command ${file} is missing a usage!`);
+  if (!commands.aliases) return console.log(`Command ${file} is missing aliases!`)
+  if (!command.execute) return console.log(`Command ${file} is missing an execute function!`);
+
+  _aliases = command.aliases;
+  _aliases.push(command.name)
+
+  
+  commands[command.name] = {
+    name: command.name,
+    description: command.description,
+    usage: command.usage,
+    aliases: _aliases,
+    execute: command.execute
+  };
+}
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   // Only allow contribs and techhelp
@@ -56,23 +85,16 @@ client.on('messageCreate', async (message) => {
     // handle command
 
     let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
+    let args = message.content.split(' ').slice(1);
+
+    for (const cmd of commands) {
+      if (cmd.aliases.includes(command)) {
+        cmd.execute(message, args);
+      }
+    }
 
     if (command === 'logs') {
-      if ( message.mentions.users.size === 0 ) return message.channel.send('You need to mention a user to get their logs!');
-      uuid = Crypto.randomUUID();
-      logTokens[uuid] = {
-        channelid: message.channel.id,
-        requester: message.author.id,
-        requestee: message.mentions.users.first().id,
-      };
-      message.channel.send(`${message.mentions.users.first()}, <@${message.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
-      message.channel.send(`\`${uuid}\``);
-      message.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
-      setTimeout(() => {
-        if (logTokens[uuid]) {
-          delete logTokens[uuid];
-        }
-      }, 7200000);
+      
     }
 
 
