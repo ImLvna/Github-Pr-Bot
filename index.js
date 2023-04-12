@@ -101,14 +101,22 @@ client.on('messageCreate', async (message) => {
       return;
     } else if (command === 'rooteval' || command === 'evalroot') {
       if (!isContributor) return;
-      message.channel.send(eval(args.join(' ')));
-      return;
+      try {
+        _ =  eval(args.join(' '));
+        message.channel.send(_);
+      } catch (e) {
+        message.channel.send(e);
+        return;
+      }
     } else if (command === 'rootevalasync' || command === 'evalrootasync') {
       if (!isContributor) return;
-      message.channel.send('✅')
-      _ = await eval(args.join(' '));
-      message.channel.send(_);
-      return;
+      try {
+        _ =  eval(args.join(' '));
+        message.channel.send(_);
+      } catch (e) {
+        message.channel.send(e);
+        return;
+      }
     }
     Object.values(commands).forEach((cmd) => {
       if (cmd.aliases.includes(command)) {
