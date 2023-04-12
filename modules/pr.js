@@ -1,3 +1,17 @@
+const { Octokit } = require("@octokit/rest");
+
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN,
+});
+
+octokit.hook.error("request", async (error, options) => {
+  if (error.status === 404) {
+    return false;
+  }
+
+  throw error;
+});
+
 module.exports.sendMessage = (message) => {
   let numbers = message.content.match(/#(\d{1,4})/g).map(n => n.replace('#', ''));
   numbers.forEach(async num => {

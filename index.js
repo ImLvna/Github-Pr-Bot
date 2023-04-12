@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { Octokit } = require("@octokit/rest");
 const { Client, EmbedBuilder, Partials } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
@@ -28,17 +27,7 @@ const client = new Client({
 //   login: (token) => {}
 // }
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-});
 
-octokit.hook.error("request", async (error, options) => {
-  if (error.status === 404) {
-    return false;
-  }
-
-  throw error;
-});
 
 let logTokens = {};
 
