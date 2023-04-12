@@ -93,7 +93,23 @@ client.on('messageCreate', async (message) => {
 
     let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
     let args = message.content.split(' ').slice(1);
-
+    
+    if (command === 'reload') {
+      if (!isContributor) return;
+      reloadCommands();
+      message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
+      return;
+    } else if (command === 'rooteval' || command === 'evalroot') {
+      if (!isContributor) return;
+      message.channel.send(eval(args.join(' ')));
+      return;
+    } else if (command === 'rootevalasync' || command === 'evalrootasync') {
+      if (!isContributor) return;
+      message.channel.send('✅')
+      _ = await eval(args.join(' '));
+      message.channel.send(_);
+      return;
+    }
     Object.values(commands).forEach((cmd) => {
       if (cmd.aliases.includes(command)) {
         cmd.execute(message, args);

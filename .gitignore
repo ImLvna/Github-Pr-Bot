@@ -2,3 +2,4 @@
 node_modules
 yarn.lock
 uploads/
+backups_ALL.json
