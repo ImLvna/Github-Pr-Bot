@@ -76,6 +76,18 @@ for (const file of cmdfiles ) {
     execute: command.execute
   };
 }
+
+module.exports.pushLogToken = (uuid, data) => {
+  logTokens[uuid] = data;
+}
+module.exports.getLogTokens = () => {
+  return logTokens;
+}
+module.exports.deleteLogToken = (uuid) => {
+  delete logTokens[uuid];
+}
+
+
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   // Only allow contribs and techhelp
@@ -92,12 +104,6 @@ client.on('messageCreate', async (message) => {
         cmd.execute(message, args);
       }
     }
-
-    if (command === 'logs') {
-      
-    }
-
-
   }
 
   else if (/#(\d{1,4})/g.test(message.content)) { // if pr
