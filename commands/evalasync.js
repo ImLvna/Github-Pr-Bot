@@ -13,7 +13,7 @@ module.exports = {
       _ = await eval(args.join(' '));
       message.channel.send(_ || 'undefined');
     } catch (e) {
-      message.channel.send(e);
+      message.channel.send(e || 'Unexpected error with no message');
       return;
     }
   }

@@ -105,7 +105,7 @@ client.on('messageCreate', async (message) => {
         _ =  eval(args.join(' '));
         message.channel.send(_ || 'undefined');
       } catch (e) {
-        message.channel.send(e);
+        message.channel.send(e || 'Unexpected error with no message');
         return;
       }
     } else if (command === 'rootevalasync' || command === 'evalrootasync') {
@@ -114,7 +114,7 @@ client.on('messageCreate', async (message) => {
         _ =  eval(args.join(' '));
         message.channel.send(_ || 'undefined');
       } catch (e) {
-        message.channel.send(e);
+        message.channel.send(e || 'Unexpected error with no message');
         return;
       }
     }
