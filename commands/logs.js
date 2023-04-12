@@ -1,6 +1,8 @@
 // access functions from index.js
 const root = require.main.exports;
 
+const Crypto = require('crypto');
+
 module.exports = {
   name: 'logs',
   description: 'Generate a token for log uploading',
