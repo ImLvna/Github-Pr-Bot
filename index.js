@@ -46,7 +46,7 @@ var commands = {}
 
 let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
 
-function reloadCommands() {
+async function reloadCommands() {
   commands = {}
   for (const file of cmdfiles ) {
 
@@ -68,6 +68,8 @@ function reloadCommands() {
       execute: command.execute
     };
   }
+
+  return;
 }
 
 reloadCommands()
@@ -96,25 +98,16 @@ client.on('messageCreate', async (message) => {
     
     if (command === 'reload') {
       if (!isContributor) return;
-      reloadCommands();
+      await reloadCommands();
       message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
       return;
     } else if (command === 'rooteval' || command === 'evalroot') {
       if (!isContributor) return;
       try {
         _ =  eval(args.join(' '));
-        message.channel.send(_ || 'Empty response');
+        message.channel.send(_.toString() || 'Empty response');
       } catch (e) {
-        message.channel.send(e || 'Unexpected error with no message');
-        return;
-      }
-    } else if (command === 'rootevalasync' || command === 'evalrootasync') {
-      if (!isContributor) return;
-      try {
-        _ =  eval(args.join(' '));
-        message.channel.send(_ || 'Empty response');
-      } catch (e) {
-        message.channel.send(e || 'Unexpected error with no message');
+        message.channel.send(e.message || 'Unexpected error with no message');
         return;
       }
     }
