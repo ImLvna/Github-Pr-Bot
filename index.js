@@ -100,11 +100,11 @@ client.on('messageCreate', async (message) => {
     let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
     let args = message.content.split(' ').slice(1);
 
-    for (const cmd of commands) {
-      if (cmd.aliases.includes(command)) {
-        cmd.execute(message, args);
+    Object.keys(commands).forEach((key) => {
+      if (commands[key].aliases.includes(command)) {
+        commands[key].execute(message, args);
       }
-    }
+    })
   }
 
   else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
