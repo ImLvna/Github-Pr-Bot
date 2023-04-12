@@ -1,0 +1,52 @@
+openapi: 3.0.1
+info:
+  title: ToDo API
+  description: An ASP.NET Core Web API for managing ToDo items
+  termsOfService: https://example.com/terms
+  contact:
+    name: Example Contact
+    url: https://example.com/contact
+  license:
+    name: Example License
+    url: https://example.com/license
+  version: v1
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+paths:
+  /logs:
+    post:
+      summary: >-
+        Attaches a list of files to the specified artifact of the specified
+        release in the specified channel.
+      parameters:
+        - name: token
+          in: header
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                logs:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              fileBundle:
+                style: form
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Invalid Token
+        '400':
+          description: No Logs
+components: {}

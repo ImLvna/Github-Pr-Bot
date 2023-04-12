@@ -4,12 +4,15 @@ const { Client, EmbedBuilder, Partials } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
 const multer = require("multer");
+const cors = require('cors')
+const fs = require('fs');
 
 
 
 const upload = multer({ dest: "uploads/" });
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const client = new Client({ 
   intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
@@ -35,6 +38,12 @@ octokit.hook.error("request", async (error, options) => {
 
 let logTokens = {};
 
+logTokens['test'] = {
+  channelid: '1095520136552792106',
+  requester: '174200708818665472',
+  requestee: '799319081723232267'
+}
+
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -51,7 +60,6 @@ client.on('messageCreate', async (message) => {
     if (command === 'logs') {
       if ( message.mentions.users.size === 0 ) return message.channel.send('You need to mention a user to get their logs!');
       uuid = Crypto.randomUUID();
-      uuid = "1"
       logTokens[uuid] = {
         channelid: message.channel.id,
         requester: message.author.id,
@@ -64,8 +72,10 @@ client.on('messageCreate', async (message) => {
         if (logTokens[uuid]) {
           delete logTokens[uuid];
         }
-      })
+      }, 7200000);
     }
+
+
   }
 
   else if (/#(\d{1,4})/g.test(message.content)) { // if pr
@@ -212,21 +222,38 @@ app.post('/release', (req, res) => {
 });
 
 
-app.post('/logs', upload.array('logs', 2) , (req, res) => {
+app.post('/logs', upload.array('logs') , async (req, res) => {
   body = req.body;
-  if (logTokens[body.token] === undefined) return res.sendStatus(401);
+  if (logTokens[req.headers.token] === undefined) return res.sendStatus(401);
 
   if (req.files.length === 0) return res.sendStatus(400);
 
-  tokenInfo = logTokens[body.token];
+  tokenInfo = logTokens[req.headers.token];
 
-  client.channels.fetch(tokenInfo.channel).then(channel => {
-    channel.send({ content: `<@${tokenInfo.requester}>, @<${tokenInfo.requestee}'s logs are ready!`, files: req.files});
-  })
+  logs = []
 
+  for (const file of req.files) {
+    await fs.promises.copyFile(file.path, `./uploads/${file.originalname}`);
+    logs.push(`./uploads/${file.originalname}`);
+  }
 
-  
+  channel = await client.channels.fetch(tokenInfo.channelid)
+  await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs});
 
+  // Cleanups
+  req.files.forEach(file => {
+    fs.unlink(file.path, (err) => {
+      if (err) throw err;
+      console.log(`Removed ${file.path}`);
+    })
+    fs.unlink(`./uploads/${file.originalname}`, (err) => {
+      if (err) throw err;
+      console.log(`Removed ./uploads/${file.originalname}`);
+    })
+  });
+
+  delete logTokens[req.headers.token];
+  res.sendStatus(200);
 })
 
 app.listen(process.env.PORT.toString(), () => {
