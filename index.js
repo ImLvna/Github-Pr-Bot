@@ -102,10 +102,10 @@ client.on('messageCreate', async (message) => {
     let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
     let args = message.content.split(' ').slice(1);
 
-    Object.keys(commands).forEach((key) => {
-      console.log(commands[key].aliases)
-      if (commands[key].aliases.includes(command)) {
-        commands[key].execute(message, args);
+    Object.values(commands).forEach((cmd) => {
+      console.log(cmd.aliases)
+      if (cmd.aliases.includes(command)) {
+        cmd.execute(message, args);
       }
     })
   }
