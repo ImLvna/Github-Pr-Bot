@@ -59,12 +59,11 @@ let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
 
 for (const file of cmdfiles ) {
   commands = []
-  const filePath = path.join(commandsPath, file);
-  const command = require(filePath);
+  const command = require(`./commands/${file}`);
   if (!command.name) return console.log(`Command ${file} is missing a name!`);
   if (!command.description) return console.log(`Command ${file} is missing a description!`);
   if (!command.usage) return console.log(`Command ${file} is missing a usage!`);
-  if (!commands.aliases) return console.log(`Command ${file} is missing aliases!`)
+  if (!command.aliases) return console.log(`Command ${file} is missing aliases!`)
   if (!command.execute) return console.log(`Command ${file} is missing an execute function!`);
 
   _aliases = command.aliases;

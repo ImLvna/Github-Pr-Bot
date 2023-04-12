@@ -1,5 +1,5 @@
 // access functions from index.js
-const root = require('../index.js');
+const root = require.main.exports;
 
 module.exports = {
   name: 'logs',
