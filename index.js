@@ -224,6 +224,48 @@ app.post('/logs', upload.array('logs') , async (req, res) => {
   res.sendStatus(200);
 })
 
+
+
+
+
+app.post('/webhook/:id', async (req, res) => {
+  body = req.body;
+
+  channel = await client.channels.fetch(req.params.id)
+  try {
+    if (req.query.wait) {
+      await channel.send({ 
+        content: body.content || '',
+        embeds: body.embeds || [],
+        tts: body.tts || false,
+        embeds: body.embeds || [],
+        allowedMentions: body.allowedMentions || {},
+        files: body.files || [],
+        payload_json: body.payload_json || {},
+        attachments: body.attachments || [],
+        flags: body.flags || 0,
+      });
+    } else {
+      channel.send({ 
+        content: body.content || '',
+        embeds: body.embeds || [],
+        tts: body.tts || false,
+        embeds: body.embeds || [],
+        allowedMentions: body.allowedMentions || {},
+        files: body.files || [],
+        payload_json: body.payload_json || {},
+        attachments: body.attachments || [],
+        flags: body.flags || 0,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+    return;
+  }
+  res.sendStatus(200);
+});
+
 app.listen(process.env.PORT.toString(), () => {
   console.log(`Listening on port ${process.env.PORT}`);
 });
