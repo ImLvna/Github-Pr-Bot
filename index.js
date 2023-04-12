@@ -53,32 +53,35 @@ client.on('ready', async () => {
 });
 
 
-var commands = []
+var commands = {}
 
 let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
 
-for (const file of cmdfiles ) {
-  commands = []
-  const command = require(`./commands/${file}`);
-  if (!command.name) return console.log(`Command ${file} is missing a name!`);
-  if (!command.description) return console.log(`Command ${file} is missing a description!`);
-  if (!command.usage) return console.log(`Command ${file} is missing a usage!`);
-  if (!command.aliases) return console.log(`Command ${file} is missing aliases!`)
-  if (!command.execute) return console.log(`Command ${file} is missing an execute function!`);
+function reloadCommands() {
+  commands = {}
+  for (const file of cmdfiles ) {
 
-  _aliases = command.aliases;
-  _aliases.push(command.name)
+    const command = require(`./commands/${file}`);
+    if (!command.name) return console.log(`Command ${file} is missing a name!`);
+    if (!command.description) return console.log(`Command ${file} is missing a description!`);
+    if (!command.usage) return console.log(`Command ${file} is missing a usage!`);
+    if (!command.aliases) return console.log(`Command ${file} is missing aliases!`)
+    if (!command.execute) return console.log(`Command ${file} is missing an execute function!`);
 
-  console.log('Adding command: ' + command.name + ' with aliases: ' + _aliases)
+    _aliases = command.aliases;
+    _aliases.push(command.name)
 
-  commands.push({
-    name: command.name,
-    description: command.description,
-    usage: command.usage,
-    aliases: _aliases,
-    execute: command.execute
-  })
+    commands[command.name] = {
+      name: command.name,
+      description: command.description,
+      usage: command.usage,
+      aliases: _aliases,
+      execute: command.execute
+    };
+  }
 }
+
+reloadCommands()
 
 module.exports.pushLogToken = (uuid, data) => {
   logTokens[uuid] = data;
@@ -102,13 +105,11 @@ client.on('messageCreate', async (message) => {
     let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
     let args = message.content.split(' ').slice(1);
 
-    console.log(commands)
-
-    commands.forEach((cmd) => {
+    for (const cmd of commands) {
       if (cmd.aliases.includes(command)) {
         cmd.execute(message, args);
       }
-    })
+    }
   }
 
   else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
