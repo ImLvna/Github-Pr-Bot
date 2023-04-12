@@ -11,7 +11,7 @@ const path = require('path');
 
 const pr = require('./modules/pr.js');
 
-
+var autoMessages = require('./messages.json');
 
 const upload = multer({ dest: "uploads/" });
 const app = express();
@@ -113,6 +113,13 @@ client.on('messageCreate', async (message) => {
   }
 
   else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
+
+  Object.keys(autoMessages).forEach((key) => {
+    if (message.content.toLowerCase().includes(key.toLowerCase())) {
+      if (key.includes('__') && !isContributor) return; // if the key has __ in it, it requires contributor role
+      message.channel.send(autoMessages[key]);
+    }
+  })
 });
 
 client.on('messageReactionAdd', async (messageReaction, user) => {
