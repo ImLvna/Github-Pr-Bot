@@ -53,7 +53,7 @@ client.on('ready', async () => {
 });
 
 
-var commands = {}
+var commands = []
 
 let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
 
@@ -71,13 +71,13 @@ for (const file of cmdfiles ) {
 
   console.log('Adding command: ' + command.name + ' with aliases: ' + _aliases)
 
-  commands[command.name] = {
+  commands.push({
     name: command.name,
     description: command.description,
     usage: command.usage,
     aliases: _aliases,
     execute: command.execute
-  };
+  })
 }
 
 module.exports.pushLogToken = (uuid, data) => {
@@ -103,8 +103,8 @@ client.on('messageCreate', async (message) => {
     let args = message.content.split(' ').slice(1);
 
     console.log(commands)
-    Object.values(commands).forEach((cmd) => {
-      console.log(cmd.aliases)
+
+    commands.forEach((cmd) => {
       if (cmd.aliases.includes(command)) {
         cmd.execute(message, args);
       }
