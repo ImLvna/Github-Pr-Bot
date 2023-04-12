@@ -10,7 +10,7 @@ module.exports = {
     if (!message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) )) return;
     try {
       _ = eval(args.join(' '));
-      message.channel.send(_);
+      message.channel.send(_ || 'undefined');
     } catch (e) {
       message.channel.send(e);
       return;

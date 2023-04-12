@@ -103,7 +103,7 @@ client.on('messageCreate', async (message) => {
       if (!isContributor) return;
       try {
         _ =  eval(args.join(' '));
-        message.channel.send(_);
+        message.channel.send(_ || 'undefined');
       } catch (e) {
         message.channel.send(e);
         return;
@@ -112,7 +112,7 @@ client.on('messageCreate', async (message) => {
       if (!isContributor) return;
       try {
         _ =  eval(args.join(' '));
-        message.channel.send(_);
+        message.channel.send(_ || 'undefined');
       } catch (e) {
         message.channel.send(e);
         return;

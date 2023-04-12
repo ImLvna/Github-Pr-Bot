@@ -11,7 +11,7 @@ module.exports = {
     message.channel.send('✅')
     try {
       _ = await eval(args.join(' '));
-      message.channel.send(_);
+      message.channel.send(_ || 'undefined');
     } catch (e) {
       message.channel.send(e);
       return;
