@@ -108,9 +108,7 @@ client.on('messageCreate', async (message) => {
     }
   }
 
-  else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) { // if pr
-    pr.sendMessage(message);
-  }
+  else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
 });
 
 client.on('messageReactionAdd', async (messageReaction, user) => {
@@ -120,10 +118,10 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
   let member = await msg.guild.members.fetch(user.id);
   if (!member.roles.cache.some(r => r.name === 'Contributor (Code)')) return messageReaction.remove();
   if (messageReaction.emoji.name === '❌') return msg.delete();
-  else if (messageReaction.emoji.name === '❓' || messageReaction.emoji.name === '❔' || messageReaction.emoji.name === '⁉️') {
-    messageReaction.remove();
-    msg.channel.send(`<@${user.id}>, This is a PR message! Its triggered by saying the number of a pull request, ie: \`#123\`. You can react with ❌ to delete it or ❓ to get this message.`);
-  }
+  // else if (messageReaction.emoji.name === '❓' || messageReaction.emoji.name === '❔' || messageReaction.emoji.name === '⁉️') {
+  //   messageReaction.remove();
+  //   msg.channel.send(`<@${user.id}>, This is a PR message! Its triggered by saying the number of a pull request, ie: \`#123\`. You can react with ❌ to delete it or ❓ to get this message.`);
+  // }
 
   
 
