@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: Discord bot api
   description: An api for interfacing with the clangen discord bot
@@ -68,6 +68,189 @@ paths:
                   type: string
                 channel:
                   type: string
+      responses:
+        '200':
+          description: Success
+  /webhook/{channel}:
+    post:
+      tags:
+        - Moderator > Server
+      summary: >-
+        Proxies a webhook to be sent through the bot
+      parameters:
+        - name: channel
+          in: path
+          description: The channel to send the webhook to
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: wait
+          in: query
+          description: waits for server confirmation of message send before response, and returns the created message body (defaults to false; when false a message that is not saved does not return an error)
+          required: false
+          style: simple
+          schema:
+            type: boolean
+        - name: thread_id
+          in: query
+          description: Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+          required: false
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              # START WEBHOOK PROPERTIES
+              properties:
+                content:
+                  type: string
+                username: 
+                  type: string
+                avatar_url:
+                  type: string
+                tts:
+                  type: boolean
+                embeds:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      type:
+                        type: string
+                      description:
+                        type: string
+                      url:
+                        type: string
+                      timestamp:
+                        type: string
+                      color:
+                        type: integer
+                      footer:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          icon_url:
+                            type: string
+                          proxy_icon_url:
+                            type: string
+                      image:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                          proxy_url:
+                            type: string
+                          height:
+                            type: integer
+                          width:
+                            type: integer
+                      thumbnail:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                          proxy_url:
+                            type: string
+                          height:
+                            type: integer
+                          width:
+                            type: integer
+                      video:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                          height:
+                            type: integer
+                          width:
+                            type: integer
+                      provider:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          url:
+                            type: string
+                      author:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          url:
+                            type: string
+                          icon_url:
+                            type: string
+                          proxy_icon_url:
+                            type: string
+                      fields:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            value:
+                              type: string
+                            inline:
+                              type: boolean
+                allowed_mentions:
+                  type: object
+                  properties:
+                    parse:
+                      type: array
+                      items:
+                        type: string
+                    roles:
+                      type: array
+                      items:
+                        type: string
+                    users:
+                      type: array
+                      items:
+                        type: string
+                    replied_user:
+                      type: boolean
+                # components:
+                #   type: array
+                #   items:
+                #     type: object
+                #     items:
+                #       items:
+                #         type: integer
+                #       components:
+                #         type: array
+                #         items:
+                #           type: object
+                  files:
+                    type: array
+                    items:
+                      type: string
+                      format: binary
+                  payload_json:
+                    type: string
+                  attachments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        filename:
+                          type: string
+                        content:
+                          type: string
+                        content_type:
+                          type: string
+                  flags:
+                    type: integer
+                  thread_name:
+                    type: string
+            # END WEBHOOK PROPERTIES
       responses:
         '200':
           description: Success
