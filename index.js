@@ -210,17 +210,27 @@ app.post('/release', (req, res) => {
 app.post('/logs', upload.array('logs') , async (req, res) => {
   body = req.body;
   if (logTokens[req.headers.token] === undefined) return res.sendStatus(401);
+  
+  if (req.files.length === 0 && req.body.length === 0) return res.sendStatus(400);
+  
+  let files = req.files;
+  
+  logs = []
 
-  if (req.files.length === 0) return res.sendStatus(400);
+  if (files.length === 0) {
+    _ = Object.keys(req.body)
+    for (const file of _)
+    await fs.promises.writeFile(`./uploads/${file}`, req.body[file]);
+    logs.push(`./uploads/${file}`);
+  } else {
+    for (const file of files) {
+      await fs.promises.copyFile(file.path, `./uploads/${file.originalname}`);
+      logs.push(`./uploads/${file.originalname}`);
+    }
+  }
 
   tokenInfo = logTokens[req.headers.token];
 
-  logs = []
-
-  for (const file of req.files) {
-    await fs.promises.copyFile(file.path, `./uploads/${file.originalname}`);
-    logs.push(`./uploads/${file.originalname}`);
-  }
 
   channel = await client.channels.fetch(tokenInfo.channelid)
   await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs});
