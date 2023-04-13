@@ -5,7 +5,7 @@ info:
   version: v1
 
 servers:
-  - url: http://localhost:8080
+  - url: http://bot.luna.clangen.io
     description: Development server
 paths:
   /logs:
@@ -60,7 +60,7 @@ paths:
                   type: string
                 upstream:
                   type: string
-                releaselinks:
+                artifacts:
                   type: array
                   items:
                     type: string

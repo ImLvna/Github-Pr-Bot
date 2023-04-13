@@ -177,7 +177,7 @@ app.post('/release', (req, res) => {
   body = req.body;
   vernum = body.version;
   upstream = body.upstream;
-  releaselinks = body.artifacts;
+  releaselink = body.artifacts;
   changelog = body.changelog;
   channel = body.channel;
 
@@ -192,7 +192,7 @@ app.post('/release', (req, res) => {
   
   let embed = new EmbedBuilder()
     .setTitle(`Update ${vernum} is now available!`)
-    .setURL(releaselinks[0])
+    .setURL(releaselink)
     .setDescription(changelog)
     .setColor('#3381ff')
     .setFooter({ text: date });
