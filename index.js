@@ -207,7 +207,7 @@ app.post('/release', (req, res) => {
 });
 
 
-app.post('/logs', upload.array('logs') , async (req, res) => {
+app.post('/logs', upload.array('logs', 20) , async (req, res) => {
   body = req.body;
   if (logTokens[req.headers.token] === undefined) return res.sendStatus(401);
   
@@ -234,7 +234,15 @@ app.post('/logs', upload.array('logs') , async (req, res) => {
 
 
   channel = await client.channels.fetch(tokenInfo.channelid)
-  await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs});
+
+  if (logs.length > 10) {
+    await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs.slice(0, 10)});
+    await channel.send('Too many logs for one message, more are incoming...')
+    await channel.send({ files:logs.slice(10) });
+  } else {
+    await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs});
+  }
+
 
   // Cleanups
   req.files.forEach(file => {
