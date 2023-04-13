@@ -219,9 +219,10 @@ app.post('/logs', upload.array('logs') , async (req, res) => {
 
   if (files.length === 0) {
     _ = Object.keys(req.body)
-    for (const file of _)
-    await fs.promises.writeFile(`./uploads/${file}`, req.body[file]);
-    logs.push(`./uploads/${file}`);
+    for (const file of _) {
+      await fs.promises.writeFile(`./uploads/${file}`, req.body[file]);
+      logs.push(`./uploads/${file}`);
+    }
   } else {
     for (const file of files) {
       await fs.promises.copyFile(file.path, `./uploads/${file.originalname}`);
