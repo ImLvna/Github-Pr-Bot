@@ -237,7 +237,7 @@ app.post('/logs', upload.array('logs') , async (req, res) => {
     })
   });
 
-  delete logTokens[req.headers.token];
+  if (req.headers.token !== 'test') delete logTokens[req.headers.token];
   res.sendStatus(200);
 })
 
