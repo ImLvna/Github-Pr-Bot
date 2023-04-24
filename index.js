@@ -216,24 +216,15 @@ app.post('/logs', upload.array('logs', 20) , async (req, res) => {
   body = req.body;
   if (logTokens[req.headers.token] === undefined) return res.sendStatus(401);
   
-  if (req.files.length === 0 && req.body.length === 0) return res.sendStatus(400);
-  
-  let files = req.files;
-  
+  if (body.length === 0) return res.sendStatus(400);
+
   logs = []
 
-  if (files.length === 0) {
-    _ = Object.keys(req.body)
-    for (const file of _) {
-      await fs.promises.writeFile(`./uploads/${file}`, req.body[file]);
-      logs.push(`./uploads/${file}`);
-    }
-  } else {
-    for (const file of files) {
-      await fs.promises.copyFile(file.path, `./uploads/${file.originalname}`);
-      logs.push(`./uploads/${file.originalname}`);
-    }
+  for (const file of Object.keys(req.body)) {
+    await fs.promises.writeFile(`./uploads/${file}`, req.body[file]);
+    logs.push(`./uploads/${file}`);
   }
+
 
   tokenInfo = logTokens[req.headers.token];
 
