@@ -206,6 +206,11 @@ app.post('/release', (req, res) => {
   res.sendStatus(200);
 });
 
+app.get('/logtoken/:token', (req, res) => {
+  token = req.params.token;
+  if (logTokens[token] === undefined) return res.sendStatus(404);
+  return res.sendStatus(200);
+});
 
 app.post('/logs', upload.array('logs', 20) , async (req, res) => {
   body = req.body;
