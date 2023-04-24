@@ -232,7 +232,8 @@ app.post('/logs', async (req, res) => {
   if (logs.length > 10) {
     await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs.slice(0, 9)});
     await channel.send('Too many logs for one message, more are incoming...')
-    await channel.send({ files:logs.slice(10) });
+    await channel.send({ files:logs.slice(10, 19) });
+    if (logs.length > 20) await channel.send({ files:logs.slice(20, 29) });
   } else {
     await channel.send({ content: `<@${tokenInfo.requester}>, <@${tokenInfo.requestee}>'s logs are ready!`, files:logs});
   }
