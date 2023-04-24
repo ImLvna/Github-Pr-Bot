@@ -210,7 +210,7 @@ app.get('/logtoken/:token', (req, res) => {
   return res.sendStatus(200);
 });
 
-app.post('/logs', upload.array('logs', 20) , async (req, res) => {
+app.post('/logs', async (req, res) => {
   body = req.body;
   if (logTokens[req.headers.token] === undefined) return res.sendStatus(401);
   
