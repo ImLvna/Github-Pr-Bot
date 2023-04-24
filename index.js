@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, EmbedBuilder, Partials, Collection } = require('discord.js');
+const { Client, EmbedBuilder, Partials, Collection, Events } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
 const cors = require('cors')
