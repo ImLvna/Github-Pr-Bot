@@ -2,7 +2,6 @@ require('dotenv').config();
 const { Client, EmbedBuilder, Partials } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
-const multer = require("multer");
 const cors = require('cors')
 const fs = require('fs');
 const path = require('path');
@@ -12,7 +11,6 @@ const pr = require('./modules/pr.js');
 
 var autoMessages = require('./messages.json');
 
-const upload = multer({ dest: "uploads/" });
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -241,14 +239,10 @@ app.post('/logs', upload.array('logs', 20) , async (req, res) => {
 
 
   // Cleanups
-  req.files.forEach(file => {
-    fs.unlink(file.path, (err) => {
+  logs.forEach(file => {
+    fs.unlink(file, (err) => {
       if (err) throw err;
-      console.log(`Removed ${file.path}`);
-    })
-    fs.unlink(`./uploads/${file.originalname}`, (err) => {
-      if (err) throw err;
-      console.log(`Removed ./uploads/${file.originalname}`);
+      console.log(`Removed ${file}`);
     })
   });
 
