@@ -1,30 +1,30 @@
+const { SlashCommandBuilder } = require("discord.js");
 // access functions from index.js
 const root = require.main.exports;
 
 const Crypto = require('crypto');
 
 module.exports = {
-  name: 'logs',
-  description: 'Generate a token for log uploading',
-  usage: '<user>',
-  aliases: ['log', 'token'],
-  execute(message, args) {
+  data: new SlashCommandBuilder()
+    .setName('logs')
+    .setDescription('Get logs from a user')
+    .addUserOption(option => option.setName('user').setDescription('User to get logs from').setRequired(true)),
+  execute(interaction) {
 
-    if (!message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) {
+    if (!interaction.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) {
         return message.channel.send('You do not have permission to use this command!');
     };
 
-    if ( message.mentions.users.size === 0 ) return message.channel.send('You need to mention a user to get their logs!');
     uuid = Crypto.randomUUID();
 
     root.pushLogToken(uuid,
     {
-      channelid: message.channel.id,
-      requester: message.author.id,
-      requestee: message.mentions.users.first().id,
+      channelid: interaction.channel.id,
+      requester: interaction.author.id,
+      requestee: interaction.options.getUser('user').id,
     })
 
-    message.channel.send(`${message.mentions.users.first()}, <@${message.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
+    message.channel.send(`${interaction.options.getUser('user')}, <@${interaction.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
     message.channel.send(`\`${uuid}\``);
     message.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
     setTimeout(() => {

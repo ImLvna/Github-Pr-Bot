@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, EmbedBuilder, Partials } = require('discord.js');
+const { Client, EmbedBuilder, Partials, Collection } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
 const cors = require('cors')
@@ -44,11 +44,20 @@ var commands = {}
 
 let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
 
+client.commands = new Collection()
 async function reloadCommands() {
   commands = {}
   for (const file of cmdfiles ) {
+    
 
     const command = require(`./commands/${file}`);
+    
+    if ('data' in command && 'execute' in command) {
+      client.commands.set(command.data.name, command);
+    } else {
+      console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+    }
+    
     if (!command.name) return console.log(`Command ${file} is missing a name!`);
     if (!command.description) return console.log(`Command ${file} is missing a description!`);
     if (!command.usage) return console.log(`Command ${file} is missing a usage!`);
@@ -88,35 +97,9 @@ client.on('messageCreate', async (message) => {
 
   let isContributor = message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) )
 
-  if (message.content.startsWith(process.env.PREFIX)) {
-    // handle command
+  
 
-    let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
-    let args = message.content.split(' ').slice(1);
-    
-    if (command === 'reload') {
-      if (!isContributor) return;
-      await reloadCommands();
-      message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
-      return;
-    } else if (command === 'rooteval' || command === 'evalroot') {
-      if (!isContributor) return;
-      try {
-        _ =  eval(args.join(' '));
-        message.channel.send(_.toString() || 'Empty response');
-      } catch (e) {
-        message.channel.send(e.message || 'Unexpected error with no message');
-        return;
-      }
-    }
-    Object.values(commands).forEach((cmd) => {
-      if (cmd.aliases.includes(command)) {
-        cmd.execute(message, args);
-      }
-    })
-  }
-
-  else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
+  if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
 
   Object.keys(autoMessages).forEach((key) => {
     if (message.content.toLowerCase().includes(key.toLowerCase())) {
@@ -124,6 +107,30 @@ client.on('messageCreate', async (message) => {
       message.channel.send(autoMessages[key]);
     }
   })
+});
+
+
+
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const command = interaction.client.commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
 });
 
 client.on('messageReactionAdd', async (messageReaction, user) => {
