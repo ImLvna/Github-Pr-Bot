@@ -218,7 +218,6 @@ app.post('/logs', async (req, res) => {
 
   logs = []
 
-  console.log(req.body)
   for (const file of Object.keys(req.body)) {
     await fs.promises.writeFile(`./uploads/${file}`, req.body[file]);
     logs.push(`./uploads/${file}`);
