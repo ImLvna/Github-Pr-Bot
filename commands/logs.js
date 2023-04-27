@@ -25,8 +25,8 @@ module.exports = {
     })
 
     interaction.reply(`${interaction.options.getUser('user')}, <@${interaction.user.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
-    interaction.reply(`\`${uuid}\``);
-    interaction.reply(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
+    interaction.channel.send(`\`${uuid}\``);
+    interaction.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
     setTimeout(() => {
       if (root.getLogTokens()[uuid]) {
         root.deleteLogToken(uuid);
