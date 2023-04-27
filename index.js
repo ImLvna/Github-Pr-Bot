@@ -98,42 +98,47 @@ client.on('messageCreate', async (message) => {
 
   let isContributor = message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) )
 
-  if (message.content.startsWith(process.env.PREFIX)) {
-    // handle command
+  try {
+    if (message.content.startsWith(process.env.PREFIX)) {
+      // handle command
 
-    let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
-    let args = message.content.split(' ').slice(1);
-    
-    if (command === 'reload') {
-      if (message.author.id !== '174200708818665472') return;
-      await reloadCommands();
-      message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
-      return;
-    } else if (command === 'rooteval' || command === 'evalroot') {
-      if (message.author.id !== '174200708818665472') return;
-      try {
-        _ =  eval(args.join(' '));
-        message.channel.send(_.toString() || 'Empty response');
-      } catch (e) {
-        message.channel.send(e.message || 'Unexpected error with no message');
+      let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
+      let args = message.content.split(' ').slice(1);
+      
+      if (command === 'reload') {
+        if (message.author.id !== '174200708818665472') return;
+        await reloadCommands();
+        message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
         return;
+      } else if (command === 'rooteval' || command === 'evalroot') {
+        if (message.author.id !== '174200708818665472') return;
+        try {
+          _ =  eval(args.join(' '));
+          message.channel.send(_.toString() || 'Empty response');
+        } catch (e) {
+          message.channel.send(e.message || 'Unexpected error with no message');
+          return;
+        }
       }
+      Object.values(commands).forEach((cmd) => {
+        if (cmd.type == 'msg' && cmd.aliases.includes(command)) {
+          cmd.execute(message, args);
+        }
+      })
     }
-    Object.values(commands).forEach((cmd) => {
-      if (cmd.type == 'msg' && cmd.aliases.includes(command)) {
-        cmd.execute(message, args);
+
+    else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
+
+    Object.keys(autoMessages).forEach((key) => {
+      if (message.content.toLowerCase().includes(key.toLowerCase())) {
+        if (key.includes('__') && !isContributor) return; // if the key has __ in it, it requires contributor role
+        message.channel.send(autoMessages[key]);
       }
     })
+  } catch(e) {
+    message.channel.send(`**Error running command: **\n${e}\n*(Alerting <@174200708818665472>)*`)
+    console.error(e)
   }
-
-  else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
-
-  Object.keys(autoMessages).forEach((key) => {
-    if (message.content.toLowerCase().includes(key.toLowerCase())) {
-      if (key.includes('__') && !isContributor) return; // if the key has __ in it, it requires contributor role
-      message.channel.send(autoMessages[key]);
-    }
-  })
 });
 
 
