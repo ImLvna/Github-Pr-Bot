@@ -61,7 +61,7 @@ async function reloadCommands() {
       cmd.name = command.data.name
       cmd.description = command.data.description
     } else {
-      _aliases = command.aliases;
+      let _aliases = command.aliases;
       _aliases.push(command.name)
   
       cmd = {
