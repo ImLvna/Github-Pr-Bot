@@ -60,13 +60,13 @@ module.exports = {
       let newrow = new ActionRowBuilder()
         .addComponents(btn)
 
-      await userresponse.editReply({ 
+      await res.editReply({ 
         content: `Token claimed! The token will expire at ${time}`,
         components: [newrow],
       })
 
     } catch(e) {
-      await userresponse.editReply({ content: 'Confirmation not received within 2 hours, please request another token.', components: [] })
+      await res.editReply({ content: 'Confirmation not received within 2 hours, please request another token.', components: [] })
     }
   }
 };
