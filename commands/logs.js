@@ -19,8 +19,8 @@ module.exports = {
 
     root.pushLogToken(uuid,
     {
-      channelid: interaction.channel.id,
-      requester: interaction.author.id,
+      channelid: interaction.channelId,
+      requester: interaction.user.id,
       requestee: interaction.options.getUser('user').id,
     })
 
