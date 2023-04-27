@@ -4,6 +4,7 @@ const root = require.main.exports;
 
 const Crypto = require('crypto');
 
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('logs')
@@ -15,7 +16,9 @@ module.exports = {
         return interaction.reply({ content:'You do not have permission to use this command!', ephemeral: true});
     };
 
-    uuid = Crypto.randomUUID();
+    uuid = Crypto.createHash('sha1')
+    uuid.update(Crypto.randomUUID())
+    uuid = uuid.digest('hex').substr(0,6)
 
     root.pushLogToken(uuid,
     {
