@@ -202,8 +202,6 @@ Object.keys(process.env).forEach((key) => {
   channeldict[_upstream][releasechannel.toLowerCase()] = value;
 });
 
-console.log("Upstream/Channel => Discord Channel mapping: ", channeldict)
-
 
 app.post('/release', (req, res) => {
 
