@@ -18,7 +18,7 @@ module.exports = {
 
     uuid = Crypto.createHash('sha1')
     uuid.update(Crypto.randomUUID())
-    uuid = uuid.digest('hex').substr(0,6)
+    uuid = uuid.digest('hex').substr(0,7)
 
     root.pushLogToken(uuid,
     {
