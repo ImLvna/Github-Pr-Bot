@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, EmbedBuilder, Partials, Collection, Events } = require('discord.js');
+const { Client, EmbedBuilder, Partials, Collection, Events, SlashCommandBuilder } = require('discord.js');
 const express = require('express');
 const Crypto = require('crypto');
 const cors = require('cors')
@@ -42,19 +42,39 @@ client.on('ready', async () => {
 
 let cmdfiles = fs.readdirSync(path.join(__dirname,"commands"))
 
-client.commands = new Collection()
+let commands = {}
+
 async function reloadCommands() {
+  client.commands = new Collection()
   commands = {}
   for (const file of cmdfiles ) {
     
 
     const command = require(`./commands/${file}`);
-    
-    if ('data' in command && 'execute' in command) {
+
+    let cmd = {}
+
+
+    if ('data' in command) {
       client.commands.set(command.data.name, command);
+      cmd.type = 'slash'
+      cmd.name = command.data.name
+      cmd.description = command.data.description
     } else {
-      console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+      _aliases = command.aliases;
+      _aliases.push(command.name)
+  
+      cmd = {
+        name: command.name,
+        type: 'msg',
+        description: command.description,
+        aliases: _aliases,
+        execute: command.execute
+      };
     }
+    
+    commands[cmd.name] = cmd
+
   }
 
   return;
@@ -78,9 +98,35 @@ client.on('messageCreate', async (message) => {
 
   let isContributor = message.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) )
 
-  
+  if (message.content.startsWith(process.env.PREFIX)) {
+    // handle command
 
-  if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
+    let command = message.content.split(' ')[0].substring(process.env.PREFIX.length);
+    let args = message.content.split(' ').slice(1);
+    
+    if (command === 'reload') {
+      if (!isContributor) return;
+      await reloadCommands();
+      message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
+      return;
+    } else if (command === 'rooteval' || command === 'evalroot') {
+      if (!isContributor) return;
+      try {
+        _ =  eval(args.join(' '));
+        message.channel.send(_.toString() || 'Empty response');
+      } catch (e) {
+        message.channel.send(e.message || 'Unexpected error with no message');
+        return;
+      }
+    }
+    Object.values(commands).forEach((cmd) => {
+      if (cmd.type == 'msg' && cmd.aliases.includes(command)) {
+        cmd.execute(message, args);
+      }
+    })
+  }
+
+  else if (/#(\d{1,4})/g.test(message.content)  &&  isContributor) pr.sendMessage(message);
 
   Object.keys(autoMessages).forEach((key) => {
     if (message.content.toLowerCase().includes(key.toLowerCase())) {
