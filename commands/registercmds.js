@@ -21,7 +21,7 @@ module.exports = {
     for (const cmd of _cmds) {
         cmds.push(cmd.data.toJSON())
     }
-    await message.channel.send(`Registering ${cmds.lengrh} slash commands`)
+    await message.channel.send(`Registering ${cmds.length} slash commands`)
     
     try {
         const data = await rest.put(
