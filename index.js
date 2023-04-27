@@ -206,6 +206,11 @@ console.log("Upstream/Channel => Discord Channel mapping: ", channeldict)
 
 
 app.post('/release', (req, res) => {
+
+  //TODO: AUTHENTICATION
+  return res.sendStatus(403)
+
+
   body = req.body;
   vernum = body.version;
   upstream = body.upstream;
@@ -291,6 +296,11 @@ app.post('/logs', async (req, res) => {
 
 
 app.post('/webhook/:id', async (req, res) => {
+
+  //TODO: AUTHENTICATION
+  return res.sendStatus(403)
+
+  
   body = req.body;
 
   channel = await client.channels.fetch(req.params.id)
