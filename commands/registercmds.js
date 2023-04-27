@@ -16,7 +16,7 @@ module.exports = {
 
     if (typeof rest === 'undefined') rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
-    let _cmds = message.client.commands.values
+    let _cmds = message.client.commands.values()
     let cmds = []
     for (const cmd of _cmds) {
         cmds.push(cmd.data.toJSON())
