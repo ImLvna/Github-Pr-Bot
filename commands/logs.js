@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ChatInputCommandInteraction} = require("discord.js");
 // access functions from index.js
 const root = require.main.exports;
 
@@ -10,6 +10,8 @@ module.exports = {
     .setName('logs')
     .setDescription('Get logs from a user')
     .addUserOption(option => option.setName('user').setDescription('User to get logs from').setRequired(true)),
+  
+  /** @param {ChatInputCommandInteraction} interaction*/
   async execute(interaction) {
 
     if (!interaction.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) {
@@ -60,13 +62,13 @@ module.exports = {
       let newrow = new ActionRowBuilder()
         .addComponents(btn)
 
-      await res.editReply({ 
+      await res.edit({ 
         content: `Token claimed! The token will expire at ${time}`,
         components: [newrow],
       })
 
     } catch(e) {
-      await res.editReply({ content: 'Confirmation not received within 2 hours, please request another token.', components: [] })
+      await res.edit({ content: 'Confirmation not received within 2 hours, please request another token.', components: [] })
     }
   }
 };
