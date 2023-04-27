@@ -25,7 +25,7 @@ module.exports = {
     
     try {
         const data = await rest.put(
-            Routes.applicationCommands(clientId),
+            Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
             { body: cmds }
         )
 
