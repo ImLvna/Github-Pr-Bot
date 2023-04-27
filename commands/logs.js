@@ -12,7 +12,7 @@ module.exports = {
   execute(interaction) {
 
     if (!interaction.member.roles.cache.some(r => (r.name === 'Contributor (Code)' || r.name === 'Tech Helper' ) ) ) {
-        return message.channel.send('You do not have permission to use this command!');
+        return interaction.reply({ content:'You do not have permission to use this command!', ephemeral: true});
     };
 
     uuid = Crypto.randomUUID();
@@ -24,9 +24,9 @@ module.exports = {
       requestee: interaction.options.getUser('user').id,
     })
 
-    message.channel.send(`${interaction.options.getUser('user')}, <@${interaction.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
-    message.channel.send(`\`${uuid}\``);
-    message.channel.send(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
+    interaction.reply(`${interaction.options.getUser('user')}, <@${interaction.author.id}> wants to see your logs. If you want to allow this, please enter the following token into your game:`);
+    interaction.reply(`\`${uuid}\``);
+    interaction.reply(`This token will expire at <t:${Date.parse(new Date(Date.now() + 7200000)).toString() / 1000}:t>`);
     setTimeout(() => {
       if (root.getLogTokens()[uuid]) {
         root.deleteLogToken(uuid);
