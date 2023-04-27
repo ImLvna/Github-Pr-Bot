@@ -11,7 +11,7 @@ module.exports = {
   description: 'Registers Slash Commands',
   aliases: ['reg', 'regcmds'],
   async execute(message, args) {
-    if (message.author.id !== '1003759225522110524') return;
+    if (message.author.id !== '174200708818665472') return;
     
 
     if (typeof rest === 'undefined') rest = new REST().setToken(process.env.DISCORD_TOKEN);

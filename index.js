@@ -105,12 +105,12 @@ client.on('messageCreate', async (message) => {
     let args = message.content.split(' ').slice(1);
     
     if (command === 'reload') {
-      if (message.author.id !== '1003759225522110524') return;
+      if (message.author.id !== '174200708818665472') return;
       await reloadCommands();
       message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
       return;
     } else if (command === 'rooteval' || command === 'evalroot') {
-      if (message.author.id !== '1003759225522110524') return;
+      if (message.author.id !== '174200708818665472') return;
       try {
         _ =  eval(args.join(' '));
         message.channel.send(_.toString() || 'Empty response');

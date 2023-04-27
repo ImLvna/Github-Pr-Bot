@@ -6,7 +6,7 @@ module.exports = {
   description: 'Runs code as the bot',
   aliases: [],
   execute(message, args) {
-    if (message.author.id !== '1003759225522110524') return;
+    if (message.author.id !== '174200708818665472') return;
     try {
       _ = eval(args.join(' '));
       message.channel.send(_ || 'Empty response');
