@@ -22,11 +22,11 @@ io.init({
 })
 
 const metrics = {
-  prs: io.metric({name: 'PRs',}),
-  cmds: io.metric({name: 'Commands',}),
-  slashcmds: io.metric({name: 'Slash Commands',}),
-  prefixcmds: io.metric({name: 'Prefix Commands',}),
-  automsgs: io.metric({name: 'Auto Messages',}),
+  cmds: io.counter({name: 'Commands',}),
+  slashcmds: io.counter({name: 'Slash Commands',}),
+  prefixcmds: io.counter({name: 'Prefix Commands',}),
+  automsgs: io.counter({name: 'Auto Messages',}),
+  logsparsed: io.counter({name: 'Logs Parsed',}),
 }
 
 const client = new Client({ 
@@ -121,11 +121,15 @@ client.on('messageCreate', async (message) => {
       
       if (command === 'reload') {
         if (message.author.id !== '174200708818665472') return;
+        metrics.prefixcmds.inc()
+        metrics.commands.inc()
         await reloadCommands();
         message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
         return;
       } else if (command === 'rooteval' || command === 'evalroot') {
         if (message.author.id !== '174200708818665472') return;
+        metrics.prefixcmds.inc()
+        metrics.commands.inc()
         try {
           _ =  eval(args.join(' '));
           message.channel.send(_.toString() || 'Empty response');
@@ -136,6 +140,8 @@ client.on('messageCreate', async (message) => {
       }
       Object.values(commands).forEach((cmd) => {
         if (cmd.type == 'msg' && cmd.aliases.includes(command)) {
+          metrics.prefixcmds.inc()
+          metrics.commands.inc()
           cmd.execute(message, args);
         }
       })
@@ -147,6 +153,7 @@ client.on('messageCreate', async (message) => {
       if (message.content.toLowerCase().includes(key.toLowerCase())) {
         if (key.includes('__') && !isContributor) return; // if the key has __ in it, it requires contributor role
         message.channel.send(autoMessages[key]);
+        metrics.automsgs.inc()
       }
     })
   } catch(e) {
@@ -168,6 +175,8 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 
 	try {
+    metrics.slashcmds.inc()
+    metrics.commands.inc()
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
