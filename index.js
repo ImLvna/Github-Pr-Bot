@@ -22,11 +22,11 @@ io.init({
 })
 
 const metrics = {
-  cmds: io.counter({name: 'Commands',}),
-  slashcmds: io.counter({name: 'Slash Commands',}),
-  prefixcmds: io.counter({name: 'Prefix Commands',}),
-  automsgs: io.counter({name: 'Auto Messages',}),
-  logsparsed: io.counter({name: 'Logs Parsed',}),
+  cmds: io.counter({name: 'Commands'}),
+  slashcmds: io.counter({name: 'Slash Commands'}),
+  prefixcmds: io.counter({name: 'Prefix Commands'}),
+  automsgs: io.counter({name: 'Auto Messages'}),
+  logsparsed: io.counter({name: 'Logs Parsed'}),
 }
 
 const client = new Client({ 
@@ -122,14 +122,14 @@ client.on('messageCreate', async (message) => {
       if (command === 'reload') {
         if (message.author.id !== '174200708818665472') return;
         metrics.prefixcmds.inc()
-        metrics.commands.inc()
+        metrics.cmds.inc()
         await reloadCommands();
         message.channel.send('Reloaded commands!\n\n' + Object.keys(commands).join(', '));
         return;
       } else if (command === 'rooteval' || command === 'evalroot') {
         if (message.author.id !== '174200708818665472') return;
         metrics.prefixcmds.inc()
-        metrics.commands.inc()
+        metrics.cmds.inc()
         try {
           _ =  eval(args.join(' '));
           message.channel.send(_.toString() || 'Empty response');
@@ -141,7 +141,7 @@ client.on('messageCreate', async (message) => {
       Object.values(commands).forEach((cmd) => {
         if (cmd.type == 'msg' && cmd.aliases.includes(command)) {
           metrics.prefixcmds.inc()
-          metrics.commands.inc()
+          metrics.cmds.inc()
           cmd.execute(message, args);
         }
       })
@@ -176,7 +176,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
 	try {
     metrics.slashcmds.inc()
-    metrics.commands.inc()
+    metrics.cmds.inc()
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
