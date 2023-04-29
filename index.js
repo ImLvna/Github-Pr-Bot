@@ -5,6 +5,7 @@ const Crypto = require('crypto');
 const cors = require('cors')
 const fs = require('fs');
 const path = require('path');
+const io = require('@pm2/io')
 
 
 const pr = require('./modules/pr.js');
@@ -14,6 +15,19 @@ var autoMessages = require('./messages.json');
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+io.init({
+  transactions: true, // will enable the transaction tracing
+  http: true // will enable metrics about the http server (optional)
+})
+
+const metrics = {
+  prs: io.metric({name: 'PRs',}),
+  cmds: io.metric({name: 'Commands',}),
+  slashcmds: io.metric({name: 'Slash Commands',}),
+  prefixcmds: io.metric({name: 'Prefix Commands',}),
+  automsgs: io.metric({name: 'Auto Messages',}),
+}
 
 const client = new Client({ 
   intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMessageReactions'],
@@ -289,6 +303,8 @@ app.post('/logs', async (req, res) => {
       console.log(`Removed ${file}`);
     })
   });
+
+  metrics.logsparsed.inc(logsparsed.length)
 
   if (req.headers.token !== 'test') delete logTokens[req.headers.token];
   res.sendStatus(200);
