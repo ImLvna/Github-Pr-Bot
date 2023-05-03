@@ -18,7 +18,9 @@ app.use(cors());
 
 io.init({
   transactions: true, // will enable the transaction tracing
-  http: true // will enable metrics about the http server (optional)
+  http: true, // will enable metrics about the http server (optional)
+  metrics: {network: true},
+  tracing: {enabled: true}
 })
 
 const metrics = {
